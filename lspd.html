@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Santos Police Department</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:        #0A0F1E;
+    --navy-mid:    #111827;
+    --navy-light:  #1C2840;
+    --navy-border: #263352;
+    --steel:       #4A6FA5;
+    --steel-light: #7A9CC8;
+    --steel-pale:  #B8CCDF;
+    --silver:      #C8D4E0;
+    --silver-dark: #8A9BB0;
+    --white:       #FFFFFF;
+    --off-white:   #F4F6F8;
+    --gray-100:    #E8ECF0;
+    --gray-200:    #C8D0DA;
+    --gray-400:    #7A8A9A;
+    --gray-700:    #3A4A5A;
+    --gray-900:    #141E2A;
+    --red:         #8B1A1A;
+    --red-light:   #C42B2B;
+    --font-head:   'Oswald', sans-serif;
+    --font-body:   'Source Sans 3', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--navy); color: var(--white); font-size: 16px; line-height: 1.7; overflow-x: hidden; }
+
+  /* ALERT */
+  .alert-bar { background: var(--red); color: #FFD0D0; font-family: var(--font-head); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; padding: 9px 2rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+  /* HEADER */
+  header { background: var(--navy); border-bottom: 1px solid var(--navy-border); position: sticky; top: 0; z-index: 100; }
+  .header-stripe { height: 3px; background: linear-gradient(90deg, var(--steel) 0%, var(--silver) 50%, var(--steel) 100%); }
+  .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+  .logo-area { display: flex; align-items: center; gap: 16px; padding: 14px 0; text-decoration: none; }
+  .logo-text h1 { font-family: var(--font-head); font-size: 20px; font-weight: 600; color: var(--white); letter-spacing: 0.05em; line-height: 1.2; }
+  .logo-text p { font-size: 11px; color: var(--steel-light); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+
+  /* NAV */
+  nav ul { list-style: none; display: flex; gap: 0; }
+  nav ul li a { display: block; font-family: var(--font-head); font-size: 12px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--steel-pale); text-decoration: none; padding: 18px 14px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
+  nav ul li a:hover, nav ul li a.active { color: var(--white); border-bottom-color: var(--steel-light); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--steel-pale); transition: all 0.3s; }
+
+  /* HERO */
+  .hero { background: var(--navy); position: relative; overflow: hidden; padding: 6rem 2rem 5rem; text-align: center; border-bottom: 1px solid var(--navy-border); }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center top, rgba(74,111,165,0.15) 0%, transparent 70%); }
+  .hero::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255,255,255,0.01) 60px, rgba(255,255,255,0.01) 120px); }
+  .hero-badge { margin: 0 auto 2rem; display: block; position: relative; z-index: 1; }
+  .hero h2 { font-family: var(--font-head); font-size: clamp(32px,5.5vw,58px); font-weight: 700; color: var(--white); letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.1; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .hero h2 span { color: var(--steel-light); }
+  .hero p { font-size: 16px; color: var(--steel-pale); max-width: 540px; margin: 0 auto 2rem; font-weight: 300; letter-spacing: 0.02em; position: relative; z-index: 1; }
+  .hero-divider { width: 50px; height: 2px; background: var(--steel); margin: 1.5rem auto; }
+  .hero-meta { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 2.5rem; position: relative; z-index: 1; }
+  .hero-meta-item { text-align: center; }
+  .hero-meta-item .num { font-family: var(--font-head); font-size: 30px; font-weight: 600; color: var(--white); letter-spacing: 0.02em; line-height: 1; }
+  .hero-meta-item .lbl { font-size: 11px; color: var(--steel-light); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .hero-meta-sep { width: 1px; height: 36px; background: var(--navy-border); }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* SECTIONS */
+  .section { max-width: 1200px; margin: 0 auto; padding: 3.5rem 2rem; }
+  .section + .section { border-top: 1px solid var(--navy-border); }
+  .section-eyebrow { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel-light); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+  .section-eyebrow::before { content: ''; display: block; width: 20px; height: 2px; background: var(--steel); flex-shrink: 0; }
+  h2 { font-family: var(--font-head); font-size: clamp(22px,3vw,32px); font-weight: 600; color: var(--white); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 0.75rem; line-height: 1.2; }
+  h3 { font-family: var(--font-head); font-size: 16px; font-weight: 500; color: var(--white); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  p { font-size: 14px; color: var(--steel-pale); line-height: 1.75; margin-bottom: 0.75rem; }
+  p:last-child { margin-bottom: 0; }
+  .section-intro { font-size: 15px; color: var(--silver-dark); max-width: 640px; margin-bottom: 2rem; }
+  .divider { border: none; border-top: 1px solid var(--navy-border); margin: 2rem 0; }
+
+  /* STAT STRIP */
+  .stat-strip { background: var(--navy-mid); border-top: 1px solid var(--navy-border); border-bottom: 1px solid var(--navy-border); padding: 3rem 2rem; }
+  .stat-strip-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); text-align: center; }
+  .stat-item { padding: 1.5rem 1.5rem; border-right: 1px solid var(--navy-border); }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: var(--font-head); font-size: 38px; font-weight: 700; color: var(--white); letter-spacing: 0.02em; line-height: 1; }
+  .stat-num span { color: var(--steel-light); }
+  .stat-lbl { font-size: 11px; color: var(--steel-pale); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 6px; }
+
+  /* NEWS */
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 1.25rem; }
+  .news-card { background: var(--navy-mid); border: 1px solid var(--navy-border); border-top: 2px solid var(--steel); padding: 1.5rem; transition: border-top-color 0.2s, transform 0.2s; }
+  .news-card:hover { border-top-color: var(--silver); transform: translateY(-2px); }
+  .news-date { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel-light); margin-bottom: 0.5rem; }
+  .news-title { font-family: var(--font-head); font-size: 17px; font-weight: 500; color: var(--white); margin-bottom: 0.6rem; letter-spacing: 0.02em; line-height: 1.3; }
+  .news-body { font-size: 13px; color: var(--silver-dark); line-height: 1.65; margin: 0; }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .card { background: var(--navy-mid); padding: 1.5rem; position: relative; }
+  .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--steel); }
+  .card-icon { width: 40px; height: 40px; background: var(--navy-light); border: 1px solid var(--navy-border); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: var(--steel-light); }
+  .card h3 { font-size: 13px; color: var(--white); }
+  .card p { font-size: 13px; color: var(--silver-dark); }
+
+  /* DIVISIONS */
+  .division-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .division-item { background: var(--navy-mid); padding: 1.5rem 1.75rem; display: flex; align-items: flex-start; gap: 1rem; }
+  .div-letter { font-family: var(--font-head); font-size: 26px; font-weight: 700; color: var(--navy-border); line-height: 1; min-width: 32px; }
+  .div-name { font-family: var(--font-head); font-size: 14px; font-weight: 500; color: var(--white); letter-spacing: 0.04em; text-transform: uppercase; }
+  .div-area { font-size: 12px; color: var(--silver-dark); margin-top: 3px; }
+
+  /* BUREAU / UNIT CARDS */
+  .bureau-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1.25rem; }
+  .bureau-card { background: var(--navy-mid); border: 1px solid var(--navy-border); padding: 1.5rem; border-left: 3px solid var(--steel); }
+  .bureau-card.red { border-left-color: var(--red-light); }
+  .bureau-tag { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel-light); margin-bottom: 6px; }
+  .bureau-card.red .bureau-tag { color: #E57373; }
+  .bureau-card h3 { font-size: 15px; color: var(--white); margin-bottom: 0.4rem; }
+  .bureau-card p { font-size: 13px; color: var(--silver-dark); }
+
+  /* RANK TABLE */
+  .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rank-table thead tr { background: var(--navy-light); }
+  .rank-table thead th { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 14px; text-align: left; font-weight: 400; color: var(--steel-light); border-bottom: 1px solid var(--navy-border); }
+  .rank-table tbody tr { border-bottom: 1px solid var(--navy-border); background: var(--navy-mid); transition: background 0.15s; }
+  .rank-table tbody tr:hover { background: var(--navy-light); }
+  .rank-table td { padding: 10px 14px; color: var(--silver-dark); }
+  .rank-table td:first-child { font-family: var(--font-head); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--white); font-weight: 500; }
+
+  /* LEADERSHIP */
+  .leadership-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .leader-card { background: var(--navy-mid); padding: 1.25rem 1.5rem; }
+  .leader-rank { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel-light); margin-bottom: 4px; }
+  .leader-name { font-family: var(--font-head); font-size: 15px; font-weight: 500; color: var(--white); letter-spacing: 0.02em; }
+
+  /* CALLOUT */
+  .callout { background: var(--navy-light); border: 1px solid var(--navy-border); border-left: 4px solid var(--steel); padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; margin: 1.5rem 0; }
+  .callout-icon { width: 44px; height: 44px; background: var(--navy-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--steel-light); }
+  .callout-text strong { font-family: var(--font-head); font-size: 14px; font-weight: 500; color: var(--white); letter-spacing: 0.04em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  .callout-text p { font-size: 13px; color: var(--silver-dark); margin: 0; }
+
+  /* REQ LIST */
+  .req-list { list-style: none; border: 1px solid var(--navy-border); }
+  .req-list li { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid var(--navy-border); font-size: 14px; color: var(--silver-dark); background: var(--navy-mid); }
+  .req-list li:last-child { border-bottom: none; }
+  .req-check { width: 20px; height: 20px; background: var(--steel); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* RECORDS */
+  .records-note { background: var(--navy-light); border-left: 3px solid var(--steel); padding: 0.875rem 1.25rem; font-size: 13px; color: var(--steel-pale); margin: 1.25rem 0; }
+  .rec-page { display: none; }
+  .rec-page.active { display: block; }
+  .rec-tab { transition: color 0.2s, border-color 0.2s; }
+  .rec-tab.active { color: var(--white) !important; border-bottom-color: var(--steel-light) !important; }
+  .rec-tab:hover { color: var(--white) !important; }
+
+  /* CONTACT */
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+  .contact-card { background: var(--navy-mid); border: 1px solid var(--navy-border); padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; gap: 14px; }
+  .contact-card-icon { width: 38px; height: 38px; background: var(--navy-light); border: 1px solid var(--navy-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--steel-light); }
+  .contact-lbl { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--silver-dark); margin-bottom: 3px; }
+  .contact-val { font-size: 14px; color: var(--white); font-weight: 500; }
+  .contact-val a { color: inherit; text-decoration: none; }
+  .contact-val a:hover { color: var(--steel-light); text-decoration: underline; }
+
+  /* FORM */
+  input, select, textarea { background: var(--navy-light); border: 1px solid var(--navy-border); color: var(--white); font-family: var(--font-body); font-size: 14px; padding: 10px 12px; outline: none; width: 100%; transition: border-color 0.2s; }
+  input::placeholder, textarea::placeholder { color: var(--silver-dark); }
+  input:focus, select:focus, textarea:focus { border-color: var(--steel); }
+  select option { background: var(--navy-mid); }
+  label { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--silver-dark); display: block; margin-bottom: 6px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1.25rem; margin-bottom: 1.25rem; }
+  .btn { background: var(--steel); color: var(--white); border: none; font-family: var(--font-head); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; padding: 13px 32px; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: var(--steel-light); }
+
+  /* FOOTER */
+  footer { background: var(--gray-900); border-top: 1px solid var(--navy-border); padding: 3rem 2rem 2rem; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--navy-border); flex-wrap: wrap; }
+  .footer-brand h3 { font-family: var(--font-head); font-size: 17px; font-weight: 600; color: var(--white); letter-spacing: 0.05em; }
+  .footer-brand p { font-size: 12px; color: var(--silver-dark); margin-top: 4px; letter-spacing: 0.06em; }
+  .footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
+  .footer-col h4 { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel-light); margin-bottom: 0.75rem; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .footer-col ul li a { font-size: 13px; color: var(--silver-dark); text-decoration: none; transition: color 0.2s; }
+  .footer-col ul li a:hover { color: var(--white); }
+  .footer-bottom { padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-bottom p { font-size: 12px; color: var(--silver-dark); letter-spacing: 0.04em; }
+  .footer-badge { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel-light); border: 1px solid var(--navy-border); padding: 4px 10px; }
+  .partner-link { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--steel-light); text-decoration: none; border: 1px solid var(--navy-border); padding: 6px 12px; transition: color 0.2s, border-color 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .partner-link:hover { color: var(--white); border-color: var(--steel); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .page.active .section { animation: fadeUp 0.3s ease both; }
+  .page.active .section:nth-child(2) { animation-delay: 0.05s; }
+  .page.active .section:nth-child(3) { animation-delay: 0.1s; }
+
+  @media (max-width: 768px) {
+    nav ul { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); padding: 0.5rem 0; border-top: 1px solid var(--navy-border); }
+    nav ul.open { display: flex; }
+    nav ul li a { padding: 12px 2rem; border-bottom: none; border-left: 2px solid transparent; margin: 0; }
+    nav ul li a.active, nav ul li a:hover { border-left-color: var(--steel); }
+    .hamburger { display: flex; }
+    header { position: relative; }
+    .stat-strip-inner { grid-template-columns: repeat(2,1fr); }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--navy-border); }
+    .stat-item:nth-child(odd) { border-right: 1px solid var(--navy-border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="alert-bar">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  Elevated crime advisory in effect — Strawberry, Davis, and Chamberlain Hills districts
+</div>
+
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <a class="logo-area" href="#" onclick="showPage('home');return false;">
+      <svg width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#111827" stroke="#4A6FA5" stroke-width="2"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#4A6FA5" stroke-width="0.75"/>
+        <text x="50" y="38" text-anchor="middle" font-size="9" font-weight="700" fill="#7A9CC8" font-family="sans-serif" letter-spacing="1">LOS SANTOS</text>
+        <text x="50" y="52" text-anchor="middle" font-size="8" fill="#B8CCDF" font-family="sans-serif" letter-spacing="0.5">POLICE DEPT.</text>
+        <text x="50" y="65" text-anchor="middle" font-size="8" fill="#B8CCDF" font-family="sans-serif" letter-spacing="0.5">EST. 1894</text>
+        <text x="50" y="26" text-anchor="middle" font-size="12" fill="#7A9CC8" font-family="sans-serif">★</text>
+      </svg>
+      <div class="logo-text">
+        <h1>Los Santos Police Department</h1>
+        <p>City of Los Santos · Est. 1894</p>
+      </div>
+    </a>
+    <button class="hamburger" aria-label="Open menu" onclick="document.querySelector('nav ul').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <nav>
+      <ul id="nav-links">
+        <li><a href="#" class="active" onclick="showPage('home',this);return false;">Home</a></li>
+        <li><a href="#" onclick="showPage('about',this);return false;">About</a></li>
+        <li><a href="#" onclick="showPage('divisions',this);return false;">Divisions</a></li>
+        <li><a href="#" onclick="showPage('bureaus',this);return false;">Bureaus &amp; units</a></li>
+        <li><a href="#" onclick="showPage('recruitment',this);return false;">Recruitment</a></li>
+        <li><a href="#" onclick="showPage('records',this);return false;">Public records</a></li>
+        <li><a href="#" onclick="showPage('contact',this);return false;">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ HOME ═══════════════════════════ -->
+<div id="home" class="page active">
+  <div class="hero">
+    <svg class="hero-badge" width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" fill="#111827" stroke="#4A6FA5" stroke-width="2"/>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="#4A6FA5" stroke-width="1"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="#263352" stroke-width="0.5"/>
+      <text x="50" y="38" text-anchor="middle" font-size="9" font-weight="700" fill="#7A9CC8" font-family="sans-serif" letter-spacing="1">LOS SANTOS</text>
+      <text x="50" y="52" text-anchor="middle" font-size="8" fill="#B8CCDF" font-family="sans-serif" letter-spacing="0.5">POLICE DEPT.</text>
+      <text x="50" y="65" text-anchor="middle" font-size="8" fill="#B8CCDF" font-family="sans-serif" letter-spacing="0.5">EST. 1894</text>
+      <text x="50" y="26" text-anchor="middle" font-size="13" fill="#7A9CC8" font-family="sans-serif">★</text>
+    </svg>
+    <h2>To protect and <span>serve.</span></h2>
+    <div class="hero-divider"></div>
+    <p>The Los Santos Police Department has safeguarded the city since 1894. Nine area divisions, over 3,400 sworn officers, 24-hour coverage across every neighborhood.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="num">3,412</div><div class="lbl">Sworn officers</div></div>
+      <div class="hero-meta-sep"></div>
+      <div class="hero-meta-item"><div class="num">9</div><div class="lbl">Area divisions</div></div>
+      <div class="hero-meta-sep"></div>
+      <div class="hero-meta-item"><div class="num">4</div><div class="lbl">Major bureaus</div></div>
+      <div class="hero-meta-sep"></div>
+      <div class="hero-meta-item"><div class="num">24/7</div><div class="lbl">Emergency response</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Latest news</div>
+    <h2>News &amp; announcements</h2>
+    <div class="news-grid">
+      <div class="news-card">
+        <div class="news-date">June 3, 2026</div>
+        <div class="news-title">LSPD SWAT completes joint training exercise with SAHP</div>
+        <p class="news-body">Officers from LSPD's Special Weapons and Tactics unit participated in a three-day joint training exercise with San Andreas Highway Patrol at the Paleto Bay Training Facility, focusing on high-risk vehicle stop protocols and fugitive interdiction.</p>
+      </div>
+      <div class="news-card">
+        <div class="news-date">May 30, 2026</div>
+        <div class="news-title">Gang and Narcotics Division makes 47 arrests in Strawberry sweep</div>
+        <p class="news-body">A month-long undercover operation targeting narcotics distribution networks in the Strawberry and Davis districts resulted in 47 felony arrests, seizure of 34 illegal firearms, and over $2.1 million in controlled substances.</p>
+      </div>
+      <div class="news-card">
+        <div class="news-date">May 22, 2026</div>
+        <div class="news-title">Chief Caldwell announces new community policing initiative</div>
+        <p class="news-body">Chief Raymond Caldwell unveiled the Neighborhood Engagement Program, assigning dedicated community liaison officers to each of the nine area divisions. The program begins citywide on July 1, 2026.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-strip-inner">
+      <div class="stat-item"><div class="stat-num">3<span>min</span></div><div class="stat-lbl">Avg response time</div></div>
+      <div class="stat-item"><div class="stat-num">9</div><div class="stat-lbl">Area divisions</div></div>
+      <div class="stat-item"><div class="stat-num">62<span>k</span></div><div class="stat-lbl">Calls for service / yr</div></div>
+      <div class="stat-item"><div class="stat-num">18</div><div class="stat-lbl">Specialized units</div></div>
+      <div class="stat-item"><div class="stat-num">24<span>/7</span></div><div class="stat-lbl">Dispatch coverage</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Key units</div>
+    <h2>Specialized capabilities</h2>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>SWAT</h3><p>Special Weapons and Tactics — high-risk warrants, hostage rescue, and armed barricade response.</p></div>
+      <div class="card"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Homicide</h3><p>Major Crimes Division homicide detectives investigate all violent deaths within city limits.</p></div>
+      <div class="card"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><h3>Gang &amp; narcotics</h3><p>Intelligence-led enforcement targeting gang networks and narcotics distribution across the city.</p></div>
+      <div class="card"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><h3>Air support</h3><p>Helicopter and drone operations providing aerial surveillance and pursuit support across Los Santos.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ABOUT ═══════════════════════════ -->
+<div id="about" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">About the <span>LSPD</span></h2>
+    <p>Serving Los Santos since 1894.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Mission</div>
+    <h2>Who we are</h2>
+    <p class="section-intro">The Los Santos Police Department is the primary municipal law enforcement agency for the City of Los Santos, responsible for the prevention of crime, protection of life and property, and preservation of public order.</p>
+    <p style="font-size:15px;color:var(--silver-dark);line-height:1.8;max-width:720px;margin-bottom:1rem;">Founded in 1894, the LSPD has grown from a small constabulary of 40 officers to one of the largest municipal police departments in the state of San Andreas. The department operates nine geographic area divisions, four major operational bureaus, and over eighteen specialized units serving a metropolitan population of more than 3.2 million residents.</p>
+    <p style="font-size:15px;color:var(--silver-dark);line-height:1.8;max-width:720px;">The LSPD operates under the authority of the City of Los Santos and the San Andreas Department of Public Safety, alongside partner agencies including the Los Santos County Sheriff's Department and the San Andreas Highway Patrol.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Command staff</div>
+    <h2>Leadership</h2>
+    <div class="leadership-grid">
+      <div class="leader-card"><div class="leader-rank">Chief of Police</div><div class="leader-name">Raymond Caldwell</div></div>
+      <div class="leader-card"><div class="leader-rank">Deputy Chief — Operations</div><div class="leader-name">Lorraine M. Tate</div></div>
+      <div class="leader-card"><div class="leader-rank">Deputy Chief — Admin</div><div class="leader-name">Bernard A. Cross</div></div>
+      <div class="leader-card"><div class="leader-rank">Commander — Patrol</div><div class="leader-name">Cmdr. Frank D. Harlow</div></div>
+      <div class="leader-card"><div class="leader-rank">Commander — Detectives</div><div class="leader-name">Cmdr. Sheila R. Vance</div></div>
+      <div class="leader-card"><div class="leader-rank">Commander — Special Ops</div><div class="leader-name">Cmdr. Marcus T. Webb</div></div>
+      <div class="leader-card"><div class="leader-rank">General Counsel</div><div class="leader-name">Adrienne L. Park, Esq.</div></div>
+      <div class="leader-card"><div class="leader-rank">Dir. Public Affairs</div><div class="leader-name">Gwendolyn C. Holt</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Rank structure</div>
+    <h2>Chain of command</h2>
+    <table class="rank-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Role</th>
+          <th>Insignia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Chief of Police</td><td>Departmental command, mayoral appointment</td><td>Four-star eagle</td></tr>
+        <tr><td>Deputy Chief</td><td>Bureau command</td><td>Three-star eagle</td></tr>
+        <tr><td>Commander</td><td>Division command oversight</td><td>Two-star eagle</td></tr>
+        <tr><td>Captain</td><td>Area division commander</td><td>Two bars</td></tr>
+        <tr><td>Lieutenant</td><td>Watch commander / shift supervisor</td><td>One bar</td></tr>
+        <tr><td>Sergeant</td><td>Field supervisor</td><td>Three chevrons</td></tr>
+        <tr><td>Detective III</td><td>Senior investigator</td><td>Gold shield</td></tr>
+        <tr><td>Detective II</td><td>Investigator</td><td>Gold shield</td></tr>
+        <tr><td>Detective I</td><td>Junior investigator</td><td>Gold shield</td></tr>
+        <tr><td>Police Officer III</td><td>Senior patrol officer / FTO</td><td>Silver shield</td></tr>
+        <tr><td>Police Officer II</td><td>Patrol officer</td><td>Silver shield</td></tr>
+        <tr><td>Police Officer I</td><td>Probationary officer</td><td>Silver shield</td></tr>
+        <tr><td>Cadet</td><td>Academy trainee</td><td>Trainee patch</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ DIVISIONS ═══════════════════════════ -->
+<div id="divisions" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">Area <span>Divisions</span></h2>
+    <p>Nine geographic commands covering every neighborhood in Los Santos.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Geographic commands</div>
+    <h2>Division assignments</h2>
+    <p class="section-intro">The LSPD is organized into nine area divisions, each commanded by a Captain and staffed with patrol officers, detectives, and specialized personnel.</p>
+    <div class="division-grid">
+      <div class="division-item"><div class="div-letter">01</div><div><div class="div-name">Mission Row Division</div><div class="div-area">Downtown LS, Pillbox Hill, Legion Square — LSPD Headquarters</div></div></div>
+      <div class="division-item"><div class="div-letter">02</div><div><div class="div-name">Vespucci Division</div><div class="div-area">Vespucci Beach, Del Perro, Morningwood, Pacific Bluffs</div></div></div>
+      <div class="division-item"><div class="div-letter">03</div><div><div class="div-name">Rockford Hills Division</div><div class="div-area">Rockford Hills, Richman, West Vinewood, Vinewood Hills</div></div></div>
+      <div class="division-item"><div class="div-letter">04</div><div><div class="div-name">East Vinewood Division</div><div class="div-area">East Vinewood, Vinewood, Little Seoul, Textile City</div></div></div>
+      <div class="division-item"><div class="div-letter">05</div><div><div class="div-name">La Mesa Division</div><div class="div-area">La Mesa, LSIA, Terminal, Port of Los Santos</div></div></div>
+      <div class="division-item"><div class="div-letter">06</div><div><div class="div-name">Strawberry Division</div><div class="div-area">Strawberry, Chamberlain Hills, Jamestown Heights</div></div></div>
+      <div class="division-item"><div class="div-letter">07</div><div><div class="div-name">Davis Division</div><div class="div-area">Davis, Rancho, Brouge Avenue, Olympic Freeway south</div></div></div>
+      <div class="division-item"><div class="div-letter">08</div><div><div class="div-name">LS International Division</div><div class="div-area">LSIA airport facilities, cargo terminals, airport perimeter</div></div></div>
+      <div class="division-item"><div class="div-letter">09</div><div><div class="div-name">South LS Division</div><div class="div-area">South Los Santos, Elysian Island, La Puerta, Cypress Flats</div></div></div>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-strip-inner">
+      <div class="stat-item"><div class="stat-num">9</div><div class="stat-lbl">Area divisions</div></div>
+      <div class="stat-item"><div class="stat-num">24</div><div class="stat-lbl">District stations</div></div>
+      <div class="stat-item"><div class="stat-num">3.2<span>M</span></div><div class="stat-lbl">Population served</div></div>
+      <div class="stat-item"><div class="stat-num">498<span>mi²</span></div><div class="stat-lbl">Jurisdiction area</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ BUREAUS ═══════════════════════════ -->
+<div id="bureaus" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">Bureaus <span>&amp; Units</span></h2>
+    <p>Four major operational bureaus and eighteen specialized units.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Major bureaus</div>
+    <h2>Operational bureaus</h2>
+    <div class="bureau-grid">
+      <div class="bureau-card"><div class="bureau-tag">Bureau I</div><h3>Patrol services bureau</h3><p>Oversees all nine area divisions and uniformed patrol operations. Primary first-response capability for all calls for service across Los Santos.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Bureau II</div><h3>Detective bureau</h3><p>Coordinates all investigative units including Homicide, Robbery-Homicide, Burglary, Auto Theft, and Financial Crimes across the department.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Bureau III</div><h3>Special operations bureau</h3><p>Commands SWAT, Air Support, K-9, Gang and Narcotics, Vice, and all other specialized enforcement units requiring advanced training and equipment.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Bureau IV</div><h3>Administrative bureau</h3><p>Manages personnel, training, internal affairs, records, communications, and departmental logistics and budget administration.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Detective bureau</div>
+    <h2>Investigative units</h2>
+    <div class="bureau-grid">
+      <div class="bureau-card"><div class="bureau-tag">Homicide</div><h3>Homicide division</h3><p>Investigates all homicides, officer-involved shootings, and suspicious deaths within city jurisdiction. 24-hour callout rotation.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">RHD</div><h3>Robbery-homicide division</h3><p>Handles high-profile robberies, kidnapping, extortion, and cases with jurisdictional overlap or significant public interest.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Financial crimes</div><h3>Financial crimes unit</h3><p>Investigates fraud, money laundering, embezzlement, and organized financial crime including racketeer influenced operations.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Burglary / theft</div><h3>Property crimes unit</h3><p>Investigates residential and commercial burglary, grand theft, and auto theft patterns across all nine divisions.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Special operations bureau</div>
+    <h2>Specialized units</h2>
+    <div class="bureau-grid">
+      <div class="bureau-card red"><div class="bureau-tag">SWAT</div><h3>Special weapons &amp; tactics</h3><p>High-risk warrant service, armed barricade response, hostage rescue, and dignitary protection. 72-officer unit with full tactical equipment complement.</p></div>
+      <div class="bureau-card red"><div class="bureau-tag">GND</div><h3>Gang &amp; narcotics division</h3><p>Intelligence-led operations targeting gang infrastructure and narcotics distribution. Operates uniformed, plainclothes, and deep-cover units.</p></div>
+      <div class="bureau-card red"><div class="bureau-tag">Vice</div><h3>Vice unit</h3><p>Enforces laws related to organized prostitution, illegal gambling operations, and related criminal enterprises across the city.</p></div>
+      <div class="bureau-card red"><div class="bureau-tag">Air support</div><h3>Air support division</h3><p>Fleet of nine helicopters and four fixed-wing aircraft providing surveillance, pursuit support, and search and rescue over Los Santos.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">K-9</div><h3>K-9 unit</h3><p>Thirty-two trained canine teams for narcotics detection, tracking, building searches, and officer protection across all divisions.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">Motor</div><h3>Motor unit</h3><p>Motorcycle officers assigned to traffic enforcement, special events, dignitary escort, and high-visibility patrol on major corridors.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">EOD</div><h3>Explosive ordnance disposal</h3><p>Bomb squad response to explosive threats, suspicious packages, and post-blast investigation across the city and LSIA.</p></div>
+      <div class="bureau-card"><div class="bureau-tag">SIS</div><h3>Special investigation section</h3><p>Long-term surveillance and investigation of major organized crime figures operating within Los Santos.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RECRUITMENT ═══════════════════════════ -->
+<div id="recruitment" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">Join the <span>LSPD</span></h2>
+    <p>Academy Class 118 — applications now open.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Academy Class 118</div>
+    <h2>About the academy</h2>
+    <p class="section-intro">The LSPD is accepting applications for Academy Class 118. Training begins September 8, 2026 at the LSPD Training Academy, Elysian Island.</p>
+    <p style="font-size:15px;color:var(--silver-dark);line-height:1.8;max-width:720px;margin-bottom:1.5rem;">The academy runs 22 weeks and covers use of force law, firearms qualification, emergency vehicle operations, report writing, community policing, first aid, defensive tactics, and a field training rotation in a live division. Recruits are assigned as Police Officer I upon graduation with full city benefits.</p>
+    <div class="callout">
+      <div class="callout-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="callout-text"><strong>Application deadline — August 1, 2026</strong><p>Academy start: September 8, 2026 · LSPD Training Academy, Elysian Island · 22-week program</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Eligibility</div>
+    <h2>Minimum requirements</h2>
+    <ul class="req-list">
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>21 years of age or older at time of appointment</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Valid San Andreas driver's license</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>High school diploma or GED; college degree preferred</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>No felony convictions; no domestic violence convictions</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Pass written civil service examination</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Pass physical fitness and medical examination</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Pass background investigation, polygraph, and psychological evaluation</li>
+      <li><div class="req-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Pass oral interview board</li>
+    </ul>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-strip-inner">
+      <div class="stat-item"><div class="stat-num">$58<span>K</span></div><div class="stat-lbl">Recruit starting salary</div></div>
+      <div class="stat-item"><div class="stat-num">$71<span>K</span></div><div class="stat-lbl">PO I base pay</div></div>
+      <div class="stat-item"><div class="stat-num">22</div><div class="stat-lbl">Week academy</div></div>
+      <div class="stat-item"><div class="stat-num">Full</div><div class="stat-lbl">City benefits</div></div>
+      <div class="stat-item"><div class="stat-num">18<span>mo</span></div><div class="stat-lbl">Probation period</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p style="font-size:15px;color:var(--silver-dark);">Contact the LSPD Recruitment &amp; Personnel Division at <strong style="color:var(--white);">(555) 0-LSPD</strong> or visit headquarters at Mission Row, Los Santos.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RECORDS ═══════════════════════════ -->
+<div id="records" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">Public <span>Records</span></h2>
+    <p>Transparency and accountability in law enforcement.</p>
+  </div>
+
+  <div style="background:var(--navy-mid);border-bottom:1px solid var(--navy-border);">
+    <div style="max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;gap:0;overflow-x:auto;">
+      <button class="rec-tab active" onclick="showRec('rec-overview',this)" style="background:none;border:none;border-bottom:2px solid var(--steel-light);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);padding:13px 16px;cursor:pointer;white-space:nowrap;font-weight:500;">Overview</button>
+      <button class="rec-tab" onclick="showRec('rec-incidents',this)" style="background:none;border:none;border-bottom:2px solid transparent;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--silver-dark);padding:13px 16px;cursor:pointer;white-space:nowrap;">Incident reports</button>
+      <button class="rec-tab" onclick="showRec('rec-stats',this)" style="background:none;border:none;border-bottom:2px solid transparent;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--silver-dark);padding:13px 16px;cursor:pointer;white-space:nowrap;">Annual statistics</button>
+      <button class="rec-tab" onclick="showRec('rec-roster',this)" style="background:none;border:none;border-bottom:2px solid transparent;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--silver-dark);padding:13px 16px;cursor:pointer;white-space:nowrap;">Personnel roster</button>
+    </div>
+  </div>
+
+  <div id="rec-overview" class="rec-page active">
+    <div class="section">
+      <div class="section-eyebrow">SAFOIA compliance</div>
+      <h2>Records &amp; transparency</h2>
+      <p class="section-intro">The LSPD complies fully with the San Andreas Freedom of Information Act. Records are available through the Office of Public Affairs at Mission Row.</p>
+      <div class="records-note">Submit SAFOIA requests in writing to the LSPD Office of Public Affairs, Mission Row Station, Los Santos, SA 90001. Allow up to 10 business days for processing.</div>
+      <div class="card-grid">
+        <div class="card" style="cursor:pointer;" onclick="showRec('rec-incidents',document.querySelectorAll('.rec-tab')[1])"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h3>Incident reports</h3><p>Request arrest, crime, and incident reports through our records portal.</p></div>
+        <div class="card" style="cursor:pointer;" onclick="showRec('rec-stats',document.querySelectorAll('.rec-tab')[2])"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><h3>Annual statistics</h3><p>Crime statistics, use-of-force data, and departmental performance metrics.</p></div>
+        <div class="card" style="cursor:pointer;" onclick="showRec('rec-roster',document.querySelectorAll('.rec-tab')[3])"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div><h3>Personnel roster</h3><p>Sworn officer roster by division, rank, and assigned station.</p></div>
+        <div class="card"><div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Use-of-force policy</h3><p>Current departmental use-of-force policy and after-action reports.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rec-incidents" class="rec-page">
+    <div class="section">
+      <div class="section-eyebrow">Incident reports</div>
+      <h2>Request a report</h2>
+      <p class="section-intro">Submit a SAFOIA request for crime, arrest, or incident reports. Requests are processed within 10 business days. A fee of $0.10 per page applies.</p>
+      <div class="records-note">You must have been directly involved in the incident or provide written authorization from an involved party to request a report copy.</div>
+      <form onsubmit="submitForm(event)" style="margin-top:1.5rem;">
+        <div class="form-grid">
+          <div><label>Full name *</label><input type="text" placeholder="First and last name" required></div>
+          <div><label>Date of birth *</label><input type="date" required></div>
+          <div><label>Phone number *</label><input type="tel" placeholder="(555) 000-0000" required></div>
+          <div><label>Email address *</label><input type="email" placeholder="you@example.com" required></div>
+          <div><label>Incident date *</label><input type="date" required></div>
+          <div><label>Report / case number</label><input type="text" placeholder="LSPD-2026-XXXXX (if known)"></div>
+          <div><label>Incident location *</label><input type="text" placeholder="Address, intersection, or area" required></div>
+          <div><label>Report type *</label>
+            <select required>
+              <option value="">Select type</option>
+              <option>Crime report</option>
+              <option>Arrest report</option>
+              <option>Traffic collision report</option>
+              <option>Use-of-force report</option>
+              <option>Field interview card</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:1.25rem;"><label>Your relationship to the incident *</label>
+          <select required>
+            <option value="">Select relationship</option>
+            <option>Victim</option>
+            <option>Witness</option>
+            <option>Reporting party</option>
+            <option>Authorized representative / attorney</option>
+            <option>Insurance representative</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div style="margin-bottom:1.25rem;"><label>Additional information</label><textarea placeholder="Any details that may help locate the report..." rows="4" style="resize:vertical;"></textarea></div>
+        <div style="margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:10px;">
+          <input type="checkbox" id="certify-lspd" required style="width:auto;margin-top:3px;flex-shrink:0;">
+          <label for="certify-lspd" style="font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--silver-dark);text-transform:none;letter-spacing:normal;">I certify the information provided is accurate and I am authorized to request this record under the San Andreas Freedom of Information Act.</label>
+        </div>
+        <button type="submit" class="btn">Submit request</button>
+      </form>
+      <div id="lspd-confirm" style="display:none;margin-top:1.5rem;background:var(--navy-light);border-left:3px solid var(--steel);padding:1rem 1.25rem;">
+        <strong style="font-family:'Oswald',sans-serif;font-size:14px;color:var(--white);display:block;margin-bottom:4px;">Request submitted</strong>
+        <p style="font-size:13px;color:var(--steel-pale);margin:0;">Your request has been received. You will be contacted within 10 business days. Reference: <strong id="lspd-ref"></strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="rec-stats" class="rec-page">
+    <div class="section">
+      <div class="section-eyebrow">Annual statistics</div>
+      <h2>2025 crime &amp; enforcement report</h2>
+      <p class="section-intro">Published February 2026. Covers all LSPD enforcement activity January 1 – December 31, 2025.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:2.5rem;">
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">62,418</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">Calls for service</div></div>
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">14,822</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">Total arrests</div></div>
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">8,341</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">Felony arrests</div></div>
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">2,109</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">Pursuits</div></div>
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">741</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">UOF incidents</div></div>
+        <div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-left:2px solid var(--steel);padding:1rem;"><div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--white);">312</div><div style="font-size:11px;color:var(--silver-dark);margin-top:3px;letter-spacing:0.04em;">Homicide cases</div></div>
+      </div>
+      <h3 style="font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:1rem;letter-spacing:0.06em;text-transform:uppercase;">Arrests by month — 2025</h3>
+      <div style="background:var(--navy-mid);border:1px solid var(--navy-border);padding:1.5rem;margin-bottom:2rem;"><canvas id="lspdArrestsChart" height="260"></canvas></div>
+      <h3 style="font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:1rem;letter-spacing:0.06em;text-transform:uppercase;">Crime category breakdown — 2025</h3>
+      <div style="background:var(--navy-mid);border:1px solid var(--navy-border);padding:1.5rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;"><canvas id="lspdCrimeChart" height="260"></canvas><div id="lspd-legend" style="font-size:13px;color:var(--silver-dark);"></div></div>
+      <h3 style="font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:1rem;letter-spacing:0.06em;text-transform:uppercase;">Arrests by division — 2025</h3>
+      <div style="background:var(--navy-mid);border:1px solid var(--navy-border);padding:1.5rem;"><canvas id="lspdDivChart" height="280"></canvas></div>
+    </div>
+  </div>
+
+  <div id="rec-roster" class="rec-page">
+    <div class="section">
+      <div class="section-eyebrow">Personnel roster</div>
+      <h2>Sworn officer roster</h2>
+      <p class="section-intro">Current as of Q2 2026. Undercover officers, SIS personnel, and exempt command staff are not listed. Serial numbers assigned agency-wide.</p>
+      <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
+        <input id="lspd-search" oninput="filterLSPD()" placeholder="Search by name, serial, rank, or division..." style="flex:1;min-width:220px;">
+        <select id="lspd-filter-div" onchange="filterLSPD()" style="width:auto;min-width:160px;">
+          <option value="">All divisions</option>
+          <option>Mission Row</option><option>Vespucci</option><option>Rockford Hills</option>
+          <option>East Vinewood</option><option>La Mesa</option><option>Strawberry</option>
+          <option>Davis</option><option>LS International</option><option>South LS</option>
+        </select>
+        <select id="lspd-filter-rank" onchange="filterLSPD()" style="width:auto;min-width:160px;">
+          <option value="">All ranks</option>
+          <option>Captain</option><option>Lieutenant</option><option>Sergeant</option>
+          <option>Detective III</option><option>Detective II</option><option>Detective I</option>
+          <option>Police Officer III</option><option>Police Officer II</option><option>Police Officer I</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table id="lspd-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:var(--navy-light);">
+              <th style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:400;color:var(--steel-light);border-bottom:1px solid var(--navy-border);">Serial</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:400;color:var(--steel-light);border-bottom:1px solid var(--navy-border);">Name</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:400;color:var(--steel-light);border-bottom:1px solid var(--navy-border);">Rank</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:400;color:var(--steel-light);border-bottom:1px solid var(--navy-border);">Division</th>
+              <th style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:400;color:var(--steel-light);border-bottom:1px solid var(--navy-border);">Station</th>
+            </tr>
+          </thead>
+          <tbody id="lspd-body"></tbody>
+        </table>
+        <div id="lspd-count" style="font-size:12px;color:var(--silver-dark);margin-top:0.75rem;letter-spacing:0.04em;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+<div id="contact" class="page">
+  <div class="hero" style="padding:4rem 2rem 3rem;">
+    <h2 style="font-size:clamp(26px,4vw,46px);">Contact <span>LSPD</span></h2>
+    <p>For non-emergency inquiries. For emergencies, dial 911.</p>
+  </div>
+  <div class="section">
+    <div class="section-eyebrow">Get in touch</div>
+    <h2>Contacts &amp; locations</h2>
+    <div class="contact-grid">
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.08h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div><div><div class="contact-lbl">Non-emergency</div><div class="contact-val">(555) 0-LSPD</div></div></div>
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.08h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div><div><div class="contact-lbl">Recruitment</div><div class="contact-val">(555) 0-RECRUIT</div></div></div>
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="contact-lbl">Public affairs</div><div class="contact-val"><a href="mailto:publicaffairs@lspd.ls.gov">publicaffairs@lspd.ls.gov</a></div></div></div>
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="contact-lbl">Media inquiries</div><div class="contact-val"><a href="mailto:media@lspd.ls.gov">media@lspd.ls.gov</a></div></div></div>
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="contact-lbl">Headquarters</div><div class="contact-val">Mission Row Station<br>Los Santos, SA 90001</div></div></div>
+      <div class="contact-card"><div class="contact-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="contact-lbl">Office hours</div><div class="contact-val">Mon – Fri, 08:00 – 17:00<br>Records: Mon – Fri, 08:00 – 16:00</div></div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-eyebrow">Division stations</div>
+    <h2>Station locations</h2>
+    <div class="division-grid">
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">HQ</div><div><div class="div-name">Mission Row Station</div><div class="div-area">Mission Row, Downtown LS — Headquarters</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">02</div><div><div class="div-name">Vespucci Station</div><div class="div-area">Vespucci Beach, Del Perro Freeway</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">03</div><div><div class="div-name">Rockford Hills Station</div><div class="div-area">Rockford Hills, Dorset Drive</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">04</div><div><div class="div-name">East Vinewood Station</div><div class="div-area">East Vinewood, Olympic Freeway</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">05</div><div><div class="div-name">La Mesa Station</div><div class="div-area">La Mesa, Signal Street</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">06</div><div><div class="div-name">Strawberry Station</div><div class="div-area">Strawberry, Innocence Blvd</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">07</div><div><div class="div-name">Davis Station</div><div class="div-area">Davis, Roy Lowenstein Blvd</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">08</div><div><div class="div-name">LSIA Station</div><div class="div-area">LS International Airport, Terminal B</div></div></div>
+      <div class="division-item"><div class="div-letter" style="font-size:14px;color:var(--steel);">09</div><div><div class="div-name">South LS Station</div><div class="div-area">Elysian Island, Terminal Way</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>Los Santos Police Department</h3>
+        <p>City of Los Santos · Est. 1894 · lspd.ls.gov</p>
+        <div style="margin-top:1rem;">
+          <a class="partner-link" href="https://yourusername.github.io" target="_blank">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            San Andreas Highway Patrol
+          </a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col"><h4>Department</h4><ul>
+          <li><a href="#" onclick="showPage('about');return false;">About LSPD</a></li>
+          <li><a href="#" onclick="showPage('divisions');return false;">Divisions</a></li>
+          <li><a href="#" onclick="showPage('bureaus');return false;">Bureaus &amp; units</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Services</h4><ul>
+          <li><a href="#" onclick="showPage('recruitment');return false;">Recruitment</a></li>
+          <li><a href="#" onclick="showPage('records');return false;">Public records</a></li>
+          <li><a href="#" onclick="showPage('contact');return false;">Contact us</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Emergency</h4><ul>
+          <li><a href="#">Dial 911</a></li>
+          <li><a href="#">Non-emergency: (555) 0-LSPD</a></li>
+          <li><a href="#">Anonymous tip line</a></li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 City of Los Santos. All rights reserved. LSPD is an equal opportunity employer.</p>
+      <div class="footer-badge">SAFOIA compliant</div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function showPage(id, linkEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (linkEl) { linkEl.classList.add('active'); }
+  else {
+    const pages = ['home','about','divisions','bureaus','recruitment','records','contact'];
+    const idx = pages.indexOf(id);
+    if (idx > -1) document.querySelectorAll('#nav-links a')[idx].classList.add('active');
+  }
+  document.querySelector('nav ul').classList.remove('open');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showRec(id, btn) {
+  document.querySelectorAll('.rec-page').forEach(p => { p.style.display='none'; p.classList.remove('active'); });
+  document.querySelectorAll('.rec-tab').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.style.display = 'block'; el.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'rec-stats') initCharts();
+  if (id === 'rec-roster') initRoster();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitForm(e) {
+  e.preventDefault();
+  const ref = 'LSPD-IR-2026-' + Math.floor(10000 + Math.random() * 90000);
+  document.getElementById('lspd-ref').textContent = ref;
+  document.getElementById('lspd-confirm').style.display = 'block';
+  e.target.style.display = 'none';
+}
+
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return; chartsInit = true;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const arrests = [1102,980,1240,1318,1390,1520,1640,1580,1470,1310,1142,1130];
+  const steel = '#4A6FA5', navy = '#1C2840', silver = '#8A9BB0', red = '#8B1A1A';
+  const gridColor = '#263352'; const tickColor = '#8A9BB0';
+
+  new Chart(document.getElementById('lspdArrestsChart'), {
+    type: 'bar',
+    data: { labels: months, datasets: [{ label: 'Arrests', data: arrests, backgroundColor: steel, borderColor: navy, borderWidth: 1, borderRadius: 2 }] },
+    options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString() + ' arrests' } } }, scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { font: { family: 'Source Sans 3' }, color: tickColor } }, x: { grid: { display: false }, ticks: { font: { family: 'Source Sans 3' }, color: tickColor } } } }
+  });
+
+  const crimeData = [8341, 2109, 3820, 1640, 312, 741];
+  const crimeLabels = ['Felony arrests','Pursuits','Misdemeanor arrests','Property crimes','Homicide cases','UOF incidents'];
+  const crimeColors = [steel, '#7A9CC8', '#263352', '#4A6FA5', red, '#8B1A1A'];
+  new Chart(document.getElementById('lspdCrimeChart'), {
+    type: 'doughnut',
+    data: { labels: crimeLabels, datasets: [{ data: crimeData, backgroundColor: crimeColors, borderWidth: 2, borderColor: '#111827' }] },
+    options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed.toLocaleString() } } }, cutout: '60%' }
+  });
+  document.getElementById('lspd-legend').innerHTML = crimeLabels.map((l,i) =>
+    `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:12px;height:12px;background:${crimeColors[i]};flex-shrink:0;"></div><span>${l}: <strong style="color:#fff;">${crimeData[i].toLocaleString()}</strong></span></div>`).join('');
+
+  new Chart(document.getElementById('lspdDivChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Mission Row','Vespucci','Rockford Hills','E. Vinewood','La Mesa','Strawberry','Davis','LSIA','South LS'],
+      datasets: [
+        { label: 'Felony arrests', data: [1840,720,480,910,640,1320,1580,390,461], backgroundColor: steel, borderRadius: 2 },
+        { label: 'Misdemeanor arrests', data: [920,410,220,540,380,810,940,190,410], backgroundColor: '#7A9CC8', borderRadius: 2 }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top', labels: { font: { family: 'Source Sans 3' }, color: tickColor } }, tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() } } }, scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { font: { family: 'Source Sans 3' }, color: tickColor } }, x: { grid: { display: false }, ticks: { font: { family: 'Source Sans 3' }, color: tickColor } } } }
+  });
+}
+
+const LSPD_ROSTER = [
+  // MISSION ROW
+  {serial:4401,name:'Helena R. Vasquez',rank:'Captain',div:'Mission Row',station:'Mission Row Station'},
+  {serial:4218,name:'Terrence J. Okafor',rank:'Lieutenant',div:'Mission Row',station:'Mission Row Station'},
+  {serial:4087,name:'Donna M. Kramer',rank:'Lieutenant',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3941,name:'Cecil A. Harmon',rank:'Sergeant',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3822,name:'Yolanda T. Briggs',rank:'Sergeant',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3710,name:'Marcus L. Denton',rank:'Sergeant',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3604,name:'Felicia C. Norris',rank:'Detective III',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3491,name:'Randall P. Gibbs',rank:'Detective II',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3387,name:'Carolyn J. Haynes',rank:'Detective I',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3278,name:'Owen B. Stafford',rank:'Police Officer III',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3164,name:'Tamara N. Cross',rank:'Police Officer III',div:'Mission Row',station:'Mission Row Station'},
+  {serial:3052,name:'Darnell F. Pittman',rank:'Police Officer II',div:'Mission Row',station:'Mission Row Station'},
+  {serial:2948,name:'Bridget A. Flynn',rank:'Police Officer II',div:'Mission Row',station:'Mission Row Station'},
+  {serial:2839,name:'Victor C. Sandoval',rank:'Police Officer II',div:'Mission Row',station:'Mission Row Station'},
+  {serial:2724,name:'Keisha M. Howard',rank:'Police Officer I',div:'Mission Row',station:'Mission Row Station'},
+  {serial:2611,name:'Patrick L. Donahue',rank:'Police Officer I',div:'Mission Row',station:'Mission Row Station'},
+  {serial:2509,name:'Amber J. Reeves',rank:'Police Officer I',div:'Mission Row',station:'Mission Row Station'},
+  // VESPUCCI
+  {serial:4388,name:'Douglas T. Hagan',rank:'Captain',div:'Vespucci',station:'Vespucci Station'},
+  {serial:4211,name:'Stephanie R. Chu',rank:'Lieutenant',div:'Vespucci',station:'Vespucci Station'},
+  {serial:4099,name:'Leonard A. Morse',rank:'Sergeant',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3988,name:'Gloria C. Espinoza',rank:'Sergeant',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3876,name:'Clifton B. Yates',rank:'Detective II',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3764,name:'Nadia T. Brewer',rank:'Detective I',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3651,name:'Jerome P. Coleman',rank:'Police Officer III',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3548,name:'Vanessa L. Tran',rank:'Police Officer II',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3439,name:'Leroy A. Watkins',rank:'Police Officer II',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3330,name:'Monica F. Cruz',rank:'Police Officer I',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3221,name:'Nathan C. Osei',rank:'Police Officer I',div:'Vespucci',station:'Vespucci Station'},
+  {serial:3112,name:'Irene M. Bates',rank:'Police Officer I',div:'Vespucci',station:'Vespucci Station'},
+  // ROCKFORD HILLS
+  {serial:4376,name:'Kenneth L. Wheeler',rank:'Captain',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:4199,name:'Claudia R. Mosley',rank:'Lieutenant',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:4081,name:'Frederick T. Stone',rank:'Sergeant',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3971,name:'Beatrice A. Ingram',rank:'Sergeant',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3859,name:'Howard C. Blaine',rank:'Detective II',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3748,name:'Pamela J. Whitfield',rank:'Detective I',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3637,name:'Curtis B. Hayward',rank:'Police Officer III',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3524,name:'Debra N. Fontaine',rank:'Police Officer II',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3413,name:'Travis R. Bonds',rank:'Police Officer II',div:'Rockford Hills',station:'Rockford Hills Station'},
+  {serial:3304,name:'Loretta C. Sparks',rank:'Police Officer I',div:'Rockford Hills',station:'Rockford Hills Station'},
+  // EAST VINEWOOD
+  {serial:4364,name:'Arthur F. Fleming',rank:'Captain',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:4187,name:'Rhonda T. Blackwell',rank:'Lieutenant',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:4069,name:'Eugene C. Mercer',rank:'Lieutenant',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3954,name:'Shirley A. Caldwell',rank:'Sergeant',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3843,name:'Theodore B. Cross',rank:'Sergeant',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3731,name:'Josephine R. Gibbs',rank:'Detective III',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3619,name:'Chester M. Moody',rank:'Detective II',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3508,name:'Annette L. Hoover',rank:'Detective I',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3397,name:'Wendell C. Powers',rank:'Police Officer III',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3286,name:'Constance B. Byrd',rank:'Police Officer II',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3177,name:'Randall T. Yates',rank:'Police Officer II',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:3068,name:'Suzanne A. Parrish',rank:'Police Officer I',div:'East Vinewood',station:'East Vinewood Station'},
+  {serial:2959,name:'Lamar C. Dawson',rank:'Police Officer I',div:'East Vinewood',station:'East Vinewood Station'},
+  // LA MESA
+  {serial:4352,name:'Gloria M. Chambers',rank:'Captain',div:'La Mesa',station:'La Mesa Station'},
+  {serial:4174,name:'Wallace T. Bright',rank:'Lieutenant',div:'La Mesa',station:'La Mesa Station'},
+  {serial:4056,name:'Natasha C. Greer',rank:'Sergeant',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3941,name:'Harold L. Payne',rank:'Sergeant',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3829,name:'Christy B. Nguyen',rank:'Detective II',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3718,name:'Leroy A. Coleman',rank:'Detective I',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3606,name:'Sabrina J. Ellis',rank:'Police Officer III',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3495,name:'Clifton R. Bates',rank:'Police Officer II',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3384,name:'Yvonne K. Hardy',rank:'Police Officer II',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3273,name:'Phillip C. Norman',rank:'Police Officer I',div:'La Mesa',station:'La Mesa Station'},
+  {serial:3164,name:'Alexis T. Booker',rank:'Police Officer I',div:'La Mesa',station:'La Mesa Station'},
+  // STRAWBERRY
+  {serial:4340,name:'Robert V. Castillo',rank:'Captain',div:'Strawberry',station:'Strawberry Station'},
+  {serial:4162,name:'Heather L. Bishop',rank:'Lieutenant',div:'Strawberry',station:'Strawberry Station'},
+  {serial:4044,name:'Frank D. Salazar',rank:'Lieutenant',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3929,name:'Lorraine T. Knox',rank:'Sergeant',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3817,name:'Felicia M. Dunn',rank:'Sergeant',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3706,name:'Brett L. Simmons',rank:'Sergeant',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3594,name:'Yolanda K. Frost',rank:'Detective III',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3483,name:'Dwayne P. Ingram',rank:'Detective II',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3372,name:'Stephanie N. Chu',rank:'Detective I',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3261,name:'Travis R. Bonds',rank:'Police Officer III',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3152,name:'Carolyn J. Baker',rank:'Police Officer II',div:'Strawberry',station:'Strawberry Station'},
+  {serial:3041,name:'Omar T. Lawson',rank:'Police Officer II',div:'Strawberry',station:'Strawberry Station'},
+  {serial:2932,name:'Bridget A. Pryce',rank:'Police Officer II',div:'Strawberry',station:'Strawberry Station'},
+  {serial:2823,name:'Damien C. Ruiz',rank:'Police Officer I',div:'Strawberry',station:'Strawberry Station'},
+  {serial:2714,name:'Kelsey M. Wade',rank:'Police Officer I',div:'Strawberry',station:'Strawberry Station'},
+  {serial:2605,name:'Elijah F. Torres',rank:'Police Officer I',div:'Strawberry',station:'Strawberry Station'},
+  // DAVIS
+  {serial:4328,name:'Phillip A. Garrett',rank:'Captain',div:'Davis',station:'Davis Station'},
+  {serial:4150,name:'Henrietta J. Banks',rank:'Lieutenant',div:'Davis',station:'Davis Station'},
+  {serial:4032,name:'Ronnie A. Sutton',rank:'Lieutenant',div:'Davis',station:'Davis Station'},
+  {serial:3918,name:'Loretta C. Sparks',rank:'Sergeant',div:'Davis',station:'Davis Station'},
+  {serial:3806,name:'Cecil M. Watkins',rank:'Sergeant',div:'Davis',station:'Davis Station'},
+  {serial:3694,name:'Brenda L. Hodge',rank:'Sergeant',div:'Davis',station:'Davis Station'},
+  {serial:3583,name:'Perry T. Nielsen',rank:'Detective III',div:'Davis',station:'Davis Station'},
+  {serial:3471,name:'Gwendolyn A. Sparks',rank:'Detective II',div:'Davis',station:'Davis Station'},
+  {serial:3360,name:'Lionel C. Bryant',rank:'Detective I',div:'Davis',station:'Davis Station'},
+  {serial:3249,name:'Alma R. Jefferson',rank:'Police Officer III',div:'Davis',station:'Davis Station'},
+  {serial:3140,name:'Carlton J. Stone',rank:'Police Officer II',div:'Davis',station:'Davis Station'},
+  {serial:3029,name:'Felipa M. Dominguez',rank:'Police Officer II',div:'Davis',station:'Davis Station'},
+  {serial:2920,name:'Derek A. Holloway',rank:'Police Officer II',div:'Davis',station:'Davis Station'},
+  {serial:2811,name:'Nora T. Williamson',rank:'Police Officer I',div:'Davis',station:'Davis Station'},
+  {serial:2702,name:'Reginald C. Burnett',rank:'Police Officer I',div:'Davis',station:'Davis Station'},
+  {serial:2593,name:'Tammy L. Fitzgerald',rank:'Police Officer I',div:'Davis',station:'Davis Station'},
+  // LSIA
+  {serial:4316,name:'Vincent A. Okafor',rank:'Captain',div:'LS International',station:'LSIA Station'},
+  {serial:4138,name:'Denise R. Caldwell',rank:'Lieutenant',div:'LS International',station:'LSIA Station'},
+  {serial:4020,name:'Frederick L. Stone',rank:'Sergeant',div:'LS International',station:'LSIA Station'},
+  {serial:3906,name:'Vivian L. Owens',rank:'Sergeant',div:'LS International',station:'LSIA Station'},
+  {serial:3794,name:'Clyde T. Hampton',rank:'Detective II',div:'LS International',station:'LSIA Station'},
+  {serial:3682,name:'Geneva A. Stokes',rank:'Detective I',div:'LS International',station:'LSIA Station'},
+  {serial:3571,name:'Marvin J. Flowers',rank:'Police Officer III',div:'LS International',station:'LSIA Station'},
+  {serial:3459,name:'Olga R. Christensen',rank:'Police Officer II',div:'LS International',station:'LSIA Station'},
+  {serial:3348,name:'Sherman T. Pittman',rank:'Police Officer I',div:'LS International',station:'LSIA Station'},
+  {serial:3239,name:'Dolores C. Vance',rank:'Police Officer I',div:'LS International',station:'LSIA Station'},
+  // SOUTH LS
+  {serial:4304,name:'Beatrice C. Ingram',rank:'Captain',div:'South LS',station:'South LS Station'},
+  {serial:4126,name:'Douglas T. Hagan',rank:'Lieutenant',div:'South LS',station:'South LS Station'},
+  {serial:4008,name:'Josephine R. Gibbs',rank:'Sergeant',div:'South LS',station:'South LS Station'},
+  {serial:3894,name:'Chester A. Moody',rank:'Sergeant',div:'South LS',station:'South LS Station'},
+  {serial:3782,name:'Annette L. Hoover',rank:'Detective II',div:'South LS',station:'South LS Station'},
+  {serial:3671,name:'Wendell C. Powers',rank:'Detective I',div:'South LS',station:'South LS Station'},
+  {serial:3559,name:'Constance M. Byrd',rank:'Police Officer III',div:'South LS',station:'South LS Station'},
+  {serial:3448,name:'Randall T. Yates',rank:'Police Officer II',div:'South LS',station:'South LS Station'},
+  {serial:3337,name:'Suzanne A. Parrish',rank:'Police Officer II',div:'South LS',station:'South LS Station'},
+  {serial:3228,name:'Lamar C. Dawson',rank:'Police Officer I',div:'South LS',station:'South LS Station'},
+  {serial:3117,name:'Adrienne J. Weaver',rank:'Police Officer I',div:'South LS',station:'South LS Station'},
+  {serial:3006,name:'Cornelius T. Sparks',rank:'Police Officer I',div:'South LS',station:'South LS Station'},
+];
+
+let rosterInit = false;
+function initRoster() {
+  if (rosterInit) return; rosterInit = true;
+  renderRoster(LSPD_ROSTER);
+}
+
+const rankOrder = ['Captain','Lieutenant','Sergeant','Detective III','Detective II','Detective I','Police Officer III','Police Officer II','Police Officer I'];
+
+function renderRoster(data) {
+  const tbody = document.getElementById('lspd-body');
+  const sorted = [...data].sort((a,b) => {
+    if (a.div !== b.div) return a.div.localeCompare(b.div);
+    return rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank);
+  });
+  tbody.innerHTML = sorted.map((o,i) => `
+    <tr style="border-bottom:1px solid var(--navy-border);background:${i%2===0?'var(--navy-mid)':'var(--navy)'};">
+      <td style="padding:9px 14px;font-family:'Oswald',sans-serif;font-size:12px;font-weight:500;color:var(--steel-light);">${o.serial}</td>
+      <td style="padding:9px 14px;color:var(--white);">${o.name}</td>
+      <td style="padding:9px 14px;color:var(--silver-dark);">${o.rank}</td>
+      <td style="padding:9px 14px;color:var(--silver-dark);">${o.div}</td>
+      <td style="padding:9px 14px;color:var(--silver-dark);">${o.station}</td>
+    </tr>`).join('');
+  document.getElementById('lspd-count').textContent = `Showing ${data.length} of ${LSPD_ROSTER.length} officers`;
+}
+
+function filterLSPD() {
+  const q = document.getElementById('lspd-search').value.toLowerCase();
+  const div = document.getElementById('lspd-filter-div').value;
+  const rank = document.getElementById('lspd-filter-rank').value;
+  const filtered = LSPD_ROSTER.filter(o => {
+    const mq = !q || o.name.toLowerCase().includes(q) || String(o.serial).includes(q) || o.rank.toLowerCase().includes(q) || o.div.toLowerCase().includes(q);
+    const md = !div || o.div === div;
+    const mr = !rank || o.rank === rank;
+    return mq && md && mr;
+  });
+  renderRoster(filtered);
+}
+</script>
+</body>
+</html>
